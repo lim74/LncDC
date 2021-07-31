@@ -32,16 +32,16 @@ conda deactivate
 ```
 
 ## Installation
-1. Download LncDC-1.2.tar.gz from https://github.com/lim74/LncDC
+1. Download the source code from https://github.com/lim74/LncDC
 
 2. Unzip the package
 ```
-tar -xvzf lncDC-1.2.tar.gz
+unzip LncDC-main.zip
 ```
 
-3. Go to lncDC-1.2 directory
+3. Go to LncDC-main directory
 ```
-cd lncDC-1.2
+cd LncDC-main
 ```
 
 4. Install LncDC
@@ -67,21 +67,21 @@ python lncDC.py -i input.fa -o output -x hexamer_table.csv -m model.pkl -p imput
 ### Examples for prediction
 1. Predict with the default model (human).
 ```
-cd lncDC-1.2/
+cd LncDC-main/
 python bin/lncDC.py -i test/human_test.fasta -o lncdc_human.csv -t 8
 ```
 Here, the human_test.fasta file includes human RNA transcripts in fasta format. The prediction results will be stored in the lncdc_human.csv file. 8 threads are used for this prediction. 
 
 2. Predict with the self-trained model (without secondary structure based features).
 ```
-cd lncDC-1.2/
+cd LncDC-main/
 python bin/lncDC.py -i test/mouse_test.fasta -o lncdc_mouse.csv -x data/train_hexamer_table.csv -m data/XGB_model_SIF_PF.pkl -p data/imputer_SIF_PF.pkl -s data/scaler_SIF_PF.pkl -t 8
 ```
 The input file in this prediction is mouse_test.fasta, which contains the mouse RNA transcripts in fasta format. The output file is lncdc_mouse.csv. The parameter '-x' is applied, and the hexamer table train_hexamer_table.csv is provided. '-m' is used, follewed by the self-trained model XGB_model_SIF_PF.pkl. The self-trained model only used sequence intrinsic and protein features in this case. The imputer file imputer_SIF_PF.pkl and the sclar file scaler_SIF_PF.pkl are provided with parameter '-p' and '-s', respectively.  8 threads are used for the prediction.
 
 3. Predict with the self-trained model (with secondary structure features).
 ```
-cd lncDC-1.2/
+cd LncDC-main/
 python bin/lncDC.py -i test/mouse_test.fasta -o lncdc_ss_mouse.csv -x data/train_hexamer_table.csv -m data/XGB_model_SIF_PF_SBF.pkl -p data/imputer_SIF_PF_SBF.pkl -s data/scaler_SIF_PF_SBF.pkl -r -k -s data/train_ss_table -t 8
 ```
 The input file is mouse_test.fasta and the output file is lncdc_ss_mouse.csv. In addition to the parameters requried for the prediction without using secondary structure based features, '-r' and '-k' are requried for prediction with secondary structure based features. The '-r' parameter will turn on the prediction with secondary structure based features, while the '-k' parameter will provide the requried train_ss_table(s). The '-t' parameter indicates that the program will use 8 threads for prediction. 
@@ -100,14 +100,14 @@ python lncDC-train.py -m mrna.fa -c cds.fa -l lncrna.fa -o output -t number_of_t
 ### Examples for training models
 1. Train a model (No secondary structure features) using mouse data
 ```
-cd lncDC-1.2/
+cd LncDC-main/
 python bin/lncDC-train.py -m mrna_mouse.fasta -c cds_mouse.fasta -l lncrna_mouse.fasta -o self_mouse -t 8
 ```
 To train a model with mouse data, we need to provide the mRNA and lncRNA sequence, respectively. The mRNA sequences are stored in the mrna_mouse.fasta file, and their corresponding CDS sequences are stored in the cds_mouse.fasta file. The lncrna_mouse.fasta file includes the long noncoding RNA sequences. 'self_mouse' is the prefix of the output files, which include four files: self_mouse_hexamer_table.csv, self_mouse_xgb_model_SIF_PF.pkl, self_mouse_imputer_SIF_PF.pkl and self_mouse_scaler_SIF_PF.pkl. We set '-t' to 8 so that there are 8 threads will be used for the model training. 
 
 2. Train a model (with secondary structure based features) using mouse data
 ```
-cd lncDC-1.2/
+cd LncDC-main/
 python bin/lncDC-train.py -m mrna_mouse.fasta -c cds_mouse.fasta -l lncrna_mouse.fasta -o SS_mouse -r -t 8
 ```
 To train a model with secondary structure features, we only need to add the '-r' parameter. In addition to the outputs with a prefix 'SS_mouse' that are similar to the first example, five ss tables will also be generated, including SS_mouse_ss_table_k1.csv, SS_mouse_ss_table_k2.csv, SS_mouse_ss_table_k3.csv, SS_mouse_ss_table_k4.csv and SS_mouse_ss_table_k5.csv.
