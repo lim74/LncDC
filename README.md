@@ -32,7 +32,7 @@ conda deactivate
 ```
 
 ## Installation
-1. Download LncDC-1.2.tar.gz from
+1. Download LncDC-1.2.tar.gz from https://github.com/lim74/LncDC
 
 2. Unzip the package
 ```
