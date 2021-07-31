@@ -1,0 +1,6 @@
+pandas
+numpy
+sklearn
+xgboost==1.3.3
+imblearn
+biopython
