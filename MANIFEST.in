@@ -11,7 +11,7 @@ include data/imputer_SIF_PF_SBF.pkl
 include data/scaler_SIF_PF_SBF.pkl
 include data/XGB_model_SIF_PF_SBF.pkl
 include test/human_test.fasta
-Include test/mouse_test.fasta
+include test/mouse_test.fasta
 include README.md
 include LICENSE
 

@@ -27,3 +27,4 @@ lncDC.egg-info/dependency_links.txt
 lncDC.egg-info/requires.txt
 lncDC.egg-info/top_level.txt
 test/human_test.fasta
+test/mouse_test.fasta
