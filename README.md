@@ -82,7 +82,7 @@ The input file in this prediction is mouse_test.fasta, which contains the mouse 
 3. Predict with the self-trained model (with secondary structure features).
 ```
 cd LncDC-main/
-python bin/lncDC.py -i test/mouse_test.fasta -o lncdc_ss_mouse.csv -x data/train_hexamer_table.csv -m data/XGB_model_SIF_PF_SSF.pkl -p data/imputer_SIF_PF_SSF.pkl -s data/scaler_SIF_PF_SSF.pkl -r -k -s data/train_ss_table -t 8
+python bin/lncDC.py -i test/mouse_test.fasta -o lncdc_ss_mouse.csv -x data/train_hexamer_table.csv -m data/XGB_model_SIF_PF_SSF.pkl -p data/imputer_SIF_PF_SSF.pkl -s data/scaler_SIF_PF_SSF.pkl -r -k data/train_ss_table -t 8
 ```
 The input file is mouse_test.fasta and the output file is lncdc_ss_mouse.csv. In addition to the parameters requried for the prediction without using secondary structure based features, '-r' and '-k' are requried for prediction with secondary structure features. The '-r' parameter will turn on the prediction with secondary structure features, while the '-k' parameter will provide the requried train_ss_table(s). The '-t' parameter indicates that the program will use 8 threads for prediction. 
 
