@@ -36,12 +36,12 @@ conda deactivate
 
 2. Unzip the package
 ```
-unzip LncDC-main.zip
+unzip LncDC-master.zip
 ```
 
-3. Go to LncDC-main directory
+3. Go to LncDC-master directory
 ```
-cd LncDC-main
+cd LncDC-master
 ```
 
 4. Install LncDC
