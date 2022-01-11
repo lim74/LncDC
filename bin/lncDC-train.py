@@ -29,12 +29,12 @@ def load_fasta(filename):
         for line in fd:
             if '>' in line:
                 if seq != '':
-                    sequences.append(seq)
+                    sequences.append(seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'))
                 seq = ''
             else:
                 seq += line.strip()
     if seq != '':
-        sequences.append(seq)
+        sequences.append(seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'))
 
     return sequences
 

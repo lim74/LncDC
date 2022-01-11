@@ -20,13 +20,13 @@ def load_fasta(filename):
         for line in fd:
             if '>' in line:
                 if seq != '':
-                    sequences.append((seq, description))
+                    sequences.append((seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'), description))
                 seq = ''
                 description = line.strip()[1:]
             else:
                 seq += line.strip()
     if seq != '':
-        sequences.append((seq, description))
+        sequences.append((seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'), description))
 
     return sequences
 
