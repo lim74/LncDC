@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings('ignore')
+
 import os
 import re
 import pickle
@@ -10,10 +13,9 @@ from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 import train_SIF_PF_extraction
-import warnings
 
 seed = 666
-warnings.filterwarnings('ignore')
+
 
 def load_fasta(filename):
     '''
@@ -165,7 +167,7 @@ def main():
         # fit a model
         xgb_model = xgb.XGBClassifier(alpha = 10, colsample_bytree = 0.8, gamma = 0.01, learning_rate = 0.1,
                                      max_depth = 9, min_child_weight = 4, n_estimators = 1000,
-                                     objective = 'binary:logistic', subsample = 0.8,
+                                     objective = 'binary:logistic', subsample = 0.8, verbosity = 0,
                                      random_state = seed, n_jobs = thread)
         xgb_model.fit(x_resampled, y_resampled)
         pkl_filename = output_prefix + '_xgb_model_SIF_PF.pkl'
@@ -230,7 +232,7 @@ def main():
         # fit a model
         xgb_model = xgb.XGBClassifier(alpha=10, colsample_bytree=0.8, gamma=0.01, learning_rate=0.1,
                                       max_depth=9, min_child_weight=4, n_estimators=1000,
-                                      objective='binary:logistic', subsample=0.8,
+                                      objective='binary:logistic', subsample=0.8, verbosity = 0,
                                       random_state=seed, n_jobs=thread)
         xgb_model.fit(x_resampled, y_resampled)
         pkl_filename = output_prefix + '_xgb_model_SIF_PF_SSF.pkl'

@@ -2,7 +2,7 @@
 LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data.
 
 ## Pre-requisite
-python 3 >= 3.7; pandas >= 1.2.3; numpy >= 1.20.2; sklearn >= 0.24.1; xgboost >= 1.3.3; imblearn >= 0.8.0; biopython >= 1.78
+python 3 >= 3.9; pandas >= 1.2.3; numpy >= 1.20.2; scikit-learn >= 0.24.1; xgboost >= 1.3.3; imbalanced-learn >= 0.8.0; biopython >= 1.78
 
 ViennaRNA (Optional, required when using secondary structure features for prediction. Can be installed by conda: conda install -c bioconda viennarna)
 
@@ -12,7 +12,7 @@ https://docs.anaconda.com/anaconda/install/
 
 2. Create an environment 
 ```
-conda create -n lncdc     
+conda create -n lncdc python=3.9     
 ```
 Here, 'lncdc' is the name of the conda environment, which can be replaced by any names.
 

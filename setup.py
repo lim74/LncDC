@@ -12,14 +12,14 @@ setup(
     install_requires = [
         'pandas',
         'numpy',
-        'sklearn',
-        'xgboost==1.3.3',
-        'imblearn',
+        'scikit-learn',
+        'xgboost',
+        'imbalanced-learn',
         'biopython'
     ],
     package_data = {
         'data':['*.csv', '*.pkl'],
         'test':['*.fasta'],},
     include_package_data = True,
-    python_requires = '>=3.7'
+    python_requires = '>=3.9'
 )
