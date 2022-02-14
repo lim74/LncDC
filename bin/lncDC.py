@@ -2,13 +2,58 @@ import warnings
 warnings.filterwarnings('ignore')
 
 import os
+import sys
+
+system = sys.version_info
+if system[0] < 3 or system[1] < 9:
+    sys.stderr.write("ERROR: Your python version is: "+ str(system[0]) + "." + str(system[1]) +"\n" + "LncDC requires python 3.9 or newer!\n" )
+    sys.exit(1)
+
+
 import re
+import gzip
+import pathlib
 import pickle
 import pandas as pd
 import SIF_PF_extraction
 import argparse
 
+def file_check(filename, rule, filetype):
+    if not filename.endswith(rule):
+        sys.stderr.write("ERROR: Please use secondary structure trained "+filetype+ " file, which ends with: "+ rule +" \n")
+        sys.exit(1)
 
+def file_exist(filename,parser):
+    if filename == None:
+        parser.print_help()
+        sys.exit(1)
+    else:
+        if not os.path.isfile(filename):
+            sys.stderr.write("ERROR: No such file: " + filename + "\n")
+            sys.exit(1)
+
+def format_check(filename):
+    if filename.endswith((".gz", ".Z", ".z")):
+        fd = gzip.open(filename, 'rt')
+    else:
+        fd = open(filename, 'r')
+    
+    filetype = 1
+    for line in fd:
+        if line.startswith('#'):
+            continue
+        elif line.strip() == None:
+            continue
+        elif line.startswith('>'):
+            filetype = 0
+            break
+        else:
+            filetype = 1
+            break
+    
+    fd.close()
+    return filetype
+    
 def load_fasta(filename):
     '''
     load_fasta
@@ -19,41 +64,48 @@ def load_fasta(filename):
     '''
     sequences = []
     seq = ''
-    with open(filename, 'r') as fd:
-        for line in fd:
-            if '>' in line:
-                if seq != '':
-                    sequences.append((seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'), description))
-                seq = ''
-                description = line.strip()[1:]
-            else:
-                seq += line.strip()
+    
+    if filename.endswith((".gz", ".Z", ".z")):
+        fd = gzip.open(filename, 'rt')
+    else:
+        fd = open(filename, 'r')
+        
+    for line in fd:
+        if line.startswith('>'):
+            if seq != '':
+                sequences.append((seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'), description))
+            seq = ''
+            description = line.strip()[1:]
+        else:
+            seq += line.strip()
     if seq != '':
         sequences.append((seq.replace('a','A').replace('t','T').replace('g','G').replace('c','C'), description))
-
+    
+    fd.close()
     return sequences
 
 def main():
     filepath = os.path.dirname(__file__)[:-3]
     default_data_path = os.path.join(filepath,'data/')
-    parser = argparse.ArgumentParser(description='Long noncoding RNA decipherer')
-    parser.add_argument('-i','--input', help = 'input transcripts in fasta format',
+    parser = argparse.ArgumentParser(description='LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data', )
+    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3')
+    parser.add_argument('-i','--input', help = 'The inputfile with RNA transcript sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz)',
                         type = str, required = True, default = None)
-    parser.add_argument('-o','--output', help = 'output file in csv format',
+    parser.add_argument('-o','--output', help = 'The output file that will contain the prediction results in csv format. Long noncoding RNAs are labeled as lncrna, and message RNAs are labeled as mrna. Default: lncdc.output.csv',
                         type = str, default = 'lncdc.output.csv')
-    parser.add_argument('-x','--hexamer', help = 'prebuilt hexamer table',
+    parser.add_argument('-x','--hexamer', help = '(Optional) Prebuilt hexamer table in csv format. Run lncDC-train.py to obtain the hexamer table of your own training data. Default: train_hexamer_table.csv',
                         type = str, default = default_data_path+'train_hexamer_table.csv')
-    parser.add_argument('-m','--model', help = 'prebuilt trainging model',
+    parser.add_argument('-m','--model', help = '(Optional) Prebuilt training model. Run lncDC-train.py to obtain the model trained from your own training data. Default: XGB_model_SIF_PF.pkl',
                         type = str, default = default_data_path+'XGB_model_SIF_PF.pkl')
-    parser.add_argument('-p','--imputer', help = 'prebuilt imputer from training data',
+    parser.add_argument('-p','--imputer', help = '(Optional) Prebuilt imputer from training data. Run lncDC-train.py to obtain the imputer from your own training data. Default: imputer_SIF_PF.pkl',
                         type = str, default = default_data_path+'imputer_SIF_PF.pkl')
-    parser.add_argument('-s','--scaler', help = 'prebuilt scaler from training data',
+    parser.add_argument('-s','--scaler', help = '(Optional) Prebuilt scaler from training data. Run lncDC-train.py to obtain the imputer from your own training data. Default: scaler_SIF_PF.pkl',
                         type = str, default = default_data_path+'scaler_SIF_PF.pkl')
-    parser.add_argument('-r','--secondary', help = 'predict with secondary structure based features included',
+    parser.add_argument('-r','--secondary', help = '(Optional) Turn on to predict with secondary structure features. Default: turned off',
                         action = "store_true")
-    parser.add_argument('-k','--kmer', help = 'prefix of the secondary structure kmer tables',
+    parser.add_argument('-k','--kmer', help = '(Optional) Prefix of the sequence and secondary structure kmer tables. Need to specify -r first. For example, the prefix of secondary structure kmer table file mouse_ss_table_k1.csv is mouse_ss_table. Run lncDC-train.py to obtain the tables from your own training data. Default: train_ss_table',
                         type = str, default = default_data_path+'train_ss_table')
-    parser.add_argument('-t','--thread', help = 'number of thread assigned to use, set -1 to use all cpus',
+    parser.add_argument('-t','--thread', help = '(Optional) The number of threads assigned to use. Set -1 to use all cpus. Default value: -1.',
                         type = int, default = -1)
 
     args = parser.parse_args()
@@ -71,14 +123,97 @@ def main():
         thread = os.cpu_count()
     else:
         thread = thread
+    
+    if ss_feature:
+        try:
+            import RNA
+        except:
+            sys.stderr.write("ViennaRNA is not installed! \n")
+            sys.stderr.write("ViennaRNA is required for secondary structure feature extraction. \nYou can install it by conda: conda install -c bioconda viennarna \n")
+            sys.exit(1)
+    
+    print("Process Start.")
+    print("Checking if the inputfile exists ...")
+    # check if the inputfile exists
+    file_exist(inputfile, parser)
+    
+    print("Checking if the model file and other required files exist ...")
+    # check if the requried files exist
+    file_exist(hexamer_file,parser)
+    file_check(hexamer_file,'hexamer_table.csv','hexamer')
+    
+    if ss_feature:
+        # set up the default model to SSF model
+        if model.endswith('XGB_model_SIF_PF.pkl'):
+            model = os.path.join(default_data_path, 'XGB_model_SIF_PF_SSF.pkl')
+        
+        # check if the SSF model file exists
+        file_exist(model,parser)
+        
+        # check if the user inputfile is SSF model file
+        file_check(model,'model_SIF_PF_SSF.pkl','model')
+        
+        # set up the default imputer to SSF imputer
+        if imputer.endswith('imputer_SIF_PF.pkl'):
+            imputer = os.path.join(default_data_path, 'imputer_SIF_PF_SSF.pkl')
+        
+        # check if the SSF imputer file exists
+        file_exist(imputer,parser)
+        
+        # check if the user inputfile is SSF imputer file
+        file_check(imputer,'imputer_SIF_PF_SSF.pkl','imputer')
 
+        # set up the default scaler to SSF scaler
+        if scaler.endswith('scaler_SIF_PF.pkl'):
+            scaler = os.path.join(default_data_path, 'scaler_SIF_PF_SSF.pkl')
+        
+        # check if the SSF scaler file exists
+        file_exist(scaler,parser)
+        
+        # check if the user inputfile is SSF scaler file
+        file_check(scaler,'scaler_SIF_PF_SSF.pkl','scaler')
+        
+        # check if the ss kmer files exist
+        file_exist(ss_kmer_file + '_k1.csv',parser)
+        file_exist(ss_kmer_file + '_k2.csv',parser)
+        file_exist(ss_kmer_file + '_k3.csv',parser)
+        file_exist(ss_kmer_file + '_k4.csv',parser)
+        file_exist(ss_kmer_file + '_k5.csv',parser)
+    else:
+        file_exist(model,parser)
+        file_check(model,'model_SIF_PF.pkl','model')
+        file_exist(imputer,parser)
+        file_check(imputer,'imputer_SIF_PF.pkl','imputer')
+        file_exist(scaler,parser)
+        file_check(scaler,'scaler_SIF_PF.pkl','scaler')
+        
+    print("Checking if the inputfile is in fasta format ...")
+    # check if the inputfile is in fasta format
+    file_format = format_check(inputfile)
+    if not file_format == 0:
+        sys.stderr.write("ERROR: Your inputfile is not in fasta format \n")
+        sys.exit(1)
+    else:
+        print("PASS")
+    
+    # create any parent directories if needed
+    current_path = pathlib.Path().resolve()
+    outputfile = os.path.join(current_path, outputfile)
+
+    if not os.path.isfile(outputfile):
+        os.makedirs(os.path.dirname(outputfile), exist_ok = True)
+    
     test_data = load_fasta(inputfile)
+    
+    print("Initializing dataframe ...")
     # initialize a dataframe
     dataset = pd.DataFrame(index = range(len(test_data)), columns = ['Sequence','Description'])
     for i in range(dataset.index.size):
         dataset.loc[i,'Sequence'] = test_data[i][0]
         dataset.loc[i,'Description'] = test_data[i][1]
-
+    
+    print("Total Number of transcripts loaded: " + str(dataset.index.size))
+    
     # remove the sequences that have non [ATGC] inside
     for i in range(dataset.index.size):
         if len(re.findall(r'[^ATGC]',dataset.loc[i,'Sequence'])) > 0:
@@ -86,7 +221,9 @@ def main():
     dataset.dropna(how = 'any', inplace = True)
     # reset the index of the dataframe
     dataset.reset_index(drop = True, inplace = True)
-
+    
+    print("Calculating transcript lengths ...")
+    
     # Calculate the length of the transcripts
     for i in range(dataset.index.size):
         dataset.loc[i,'Transcript_length'] = len(dataset.loc[i, 'Sequence'])
@@ -105,9 +242,15 @@ def main():
     # IF only use SIF and PF features
     if not ss_feature:
         # Filter out sequence length less than 200nt
+        # print()
         dataset = dataset[dataset['Transcript_length'] >= 200]
         dataset = dataset.reset_index(drop=True)
-
+        
+        print("Removing Non-valid transcripts (sequence that have non-ATGCatgc letters & sequence length less than 200 nt) ...")
+        print("Number of valid transcripts: " + str(dataset.index.size))
+        
+        print("Extracting SIF and PF features ...")
+        
         # extract features
         dataset = SIF_PF_extraction.sif_pf_extract(dataset, thread, coding_hexamer, noncoding_hexamer)
         columns = ['Description','Transcript_length','GC_content', 'Fickett_score', 'ORF_T0_length', 'ORF_T1_length',
@@ -127,7 +270,8 @@ def main():
         with open(scaler, 'rb') as file:
             pickle_scaler = pickle.load(file)
         x_test[x_test.columns] = pickle_scaler.transform(x_test[x_test.columns])
-
+        
+        print("Predicting ...")
         # Load model
         with open(model, 'rb') as file:
             XGB_model = pickle.load(file)
@@ -138,16 +282,25 @@ def main():
         # Append predictions and output
         dataset['Noncoding_prob'] = y_prob
         dataset['predict'] = y_pred
-
+        
+        print("Writing the output to file: " + str(outputfile))
         # output to a result file
         dataset.to_csv(outputfile, index = False)
+        
+        print("Done!")
+        
     else:
         # Use SIF + PF + SSF
         import SSF_extraction
         # Filter out sequence length less than 200nt
         dataset = dataset[dataset['Transcript_length'] >= 200]
         dataset = dataset.reset_index(drop=True)
-
+        
+        print("Removing Non-valid transcripts (sequence that have non-ATGCatgc" + " letters & sequence length less than 200 nt) ...")
+        print("Number of valid transcripts: " + str(dataset.index.size))
+        
+        print("Extracting SIF and PF features ...")
+        
         # extract SIF + PF features
         dataset = SIF_PF_extraction.sif_pf_extract(dataset, thread, coding_hexamer, noncoding_hexamer)
         columns = ['Sequence','Description', 'Transcript_length', 'GC_content', 'Fickett_score', 'ORF_T0_length', 'ORF_T1_length',
@@ -212,7 +365,7 @@ def main():
                 ss = line_split[0]
                 mrna_5mer[ss] = float(line_split[1])
                 lncrna_5mer[ss] = float(line_split[2])
-
+        
         # extract SSF features
         dataset = SSF_extraction.ssf_extract(dataset, thread, mrna_1mer, lncrna_1mer,
                                              mrna_2mer, lncrna_2mer, mrna_3mer, lncrna_3mer,
@@ -237,7 +390,8 @@ def main():
         with open(scaler, 'rb') as file:
             pickle_scaler = pickle.load(file)
         x_test[x_test.columns] = pickle_scaler.transform(x_test[x_test.columns])
-
+        
+        print("Predicting ...")
         # Load model
         with open(model, 'rb') as file:
             XGB_model = pickle.load(file)
@@ -249,8 +403,11 @@ def main():
         dataset['Noncoding_prob'] = y_prob
         dataset['predict'] = y_pred
 
+        print("Writing the output to file: " + str(outputfile))
         # output to a result file
         dataset.to_csv(outputfile, index=False)
-
+        
+        print("Done!")
+        
 if __name__ == '__main__':
     main()

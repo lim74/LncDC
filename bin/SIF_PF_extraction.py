@@ -1,4 +1,5 @@
 import re
+import os
 import numpy as np
 import pandas as pd
 import multiprocessing
@@ -670,13 +671,13 @@ def run_pf_T3_parallel(data):
 # feature extraction
 def feature_extract(dataset, thread, feature):
     run_feature_parallel = feature
-    df_chunks = np.array_split(dataset, thread)
+    df_chunks = np.array_split(dataset, thread*10)
     with multiprocessing.Pool(thread) as pool:
         dataset = pd.concat(pool.map(run_feature_parallel, df_chunks), ignore_index = False)
     return dataset
 
 def feature_extract_hexamer(dataset, thread, feature, coding_hexamer, noncoding_hexamer):
-    df_chunks = np.array_split(dataset, thread)
+    df_chunks = np.array_split(dataset, thread*10)
     parallel_function = partial(feature, coding_hexamer=coding_hexamer, noncoding_hexamer=noncoding_hexamer)
     with multiprocessing.Pool(thread) as pool:
         dataset = pd.concat(pool.map(parallel_function, df_chunks), ignore_index = False)

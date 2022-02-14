@@ -1,4 +1,5 @@
 import re
+import os
 import numpy as np
 import pandas as pd
 import itertools
@@ -6,6 +7,7 @@ import multiprocessing
 from collections import Counter
 from functools import partial
 from Bio.SeqUtils import ProtParam
+
 
 # Sequence Intrinsic features (SIF)
 
@@ -701,13 +703,13 @@ def run_pf_T3_parallel(data):
 # feature extraction
 def feature_extract(dataset, thread, feature):
     run_feature_parallel = feature
-    df_chunks = np.array_split(dataset, thread)
+    df_chunks = np.array_split(dataset, thread*10)
     with multiprocessing.Pool(thread) as pool:
         dataset = pd.concat(pool.map(run_feature_parallel, df_chunks), ignore_index = False)
     return dataset
 
 def feature_extract_hexamer(dataset, thread, feature, coding_hexamer, noncoding_hexamer):
-    df_chunks = np.array_split(dataset, thread)
+    df_chunks = np.array_split(dataset, thread*10)
     parallel_function = partial(feature, coding_hexamer=coding_hexamer, noncoding_hexamer=noncoding_hexamer)
     with multiprocessing.Pool(thread) as pool:
         dataset = pd.concat(pool.map(parallel_function, df_chunks), ignore_index = False)
@@ -743,6 +745,9 @@ def sif_pf_extract(dataset, thread, output_table):
     lnc_kmer_total = sum(lnc_kmer.values())
     coding_hexamer = {}
     noncoding_hexamer = {}
+    
+    hex_table = output_table+'_hexamer_table.csv'
+        
     with open(output_table+'_hexamer_table.csv', 'w') as hexamer_file:
         hexamer_file.write('hexamer' + ',' + 'coding' + ',' + 'noncoding' + '\n')
         for k, v in cds_kmer.items():
@@ -778,5 +783,7 @@ def sif_pf_extract(dataset, thread, output_table):
     dataset = feature_extract(dataset, thread, run_pf_T2_parallel)
     # feature 22: type 3 ORF protein features, including: mw
     dataset = feature_extract(dataset, thread, run_pf_T3_parallel)
+    
+    print("Writing the hexamer table to file: " +str(hex_table))
     return dataset
 

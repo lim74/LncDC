@@ -1,8 +1,13 @@
 import RNA
+import os
+import tqdm
 import numpy as np
 import pandas as pd
 import multiprocessing
 from functools import partial
+from sys import platform
+    
+
 
 # Secondary Structure Features (SSF)
 
@@ -149,15 +154,29 @@ def run_GC_paired_parallel(data):
     return data
 #---------------------------------------------------------------------------------------
 # feature extraction
+def feature_extract_ss(dataset, thread, feature):
+    run_feature_parallel = feature
+    df_chunks = np.array_split(dataset, thread*10)
+    
+    print("Total number of dataframe chunks divided: " + str(len(df_chunks)))
+    print("Chunks of secondary structure calculation finished: ")
+    results = []
+    with multiprocessing.Pool(thread) as pool:
+        for result in tqdm.tqdm(pool.imap(run_feature_parallel, df_chunks), total = len(df_chunks), miniters = 1):
+            results.append(result)
+    dataset = pd.concat(results, ignore_index = False)
+    
+    return dataset
+
 def feature_extract(dataset, thread, feature):
     run_feature_parallel = feature
-    df_chunks = np.array_split(dataset, thread)
+    df_chunks = np.array_split(dataset, thread*10)
     with multiprocessing.Pool(thread) as pool:
         dataset = pd.concat(pool.map(run_feature_parallel, df_chunks), ignore_index = False)
     return dataset
 
 def feature_extract_kmer(dataset, thread, feature, mrna_mer, lncrna_mer):
-    df_chunks = np.array_split(dataset, thread)
+    df_chunks = np.array_split(dataset, thread*10)
     parallel_function = partial(feature, mrna_mer=mrna_mer, lncrna_mer=lncrna_mer)
     with multiprocessing.Pool(thread) as pool:
         dataset = pd.concat(pool.map(parallel_function, df_chunks), ignore_index = False)
@@ -166,7 +185,10 @@ def feature_extract_kmer(dataset, thread, feature, mrna_mer, lncrna_mer):
 def ssf_extract(dataset, thread, mrna_1mer, lncrna_1mer, mrna_2mer, lncrna_2mer,
                 mrna_3mer, lncrna_3mer, mrna_4mer, lncrna_4mer, mrna_5mer, lncrna_5mer):
     # extract the secondary structure of a transcript
-    dataset = feature_extract(dataset, thread, run_rnafold_parallel)
+    print("Calculating secondary structures of the transcripts by RNAfold ... (This process may take a long time!)")
+    dataset = feature_extract_ss(dataset, thread, run_rnafold_parallel)
+    
+    print("Extracting SSF features ...")
     # feature 1: Secondary structure score of kmer 1
     dataset = feature_extract_kmer(dataset, thread, run_ss_k1_parallel, mrna_1mer, lncrna_1mer)
     # feature 2: Secondary structure score of kmer 2
