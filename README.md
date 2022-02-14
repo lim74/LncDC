@@ -16,14 +16,14 @@ conda create -n lncdc python=3.9
 ```
 Here, 'lncdc' is the name of the conda environment, which can be replaced by any names.
 
-3. Install ViennaRNA for secondary structure features extraction (Optional)
-```
-conda install -c bioconda viennarna
-```
-
-4. Activate the environment (before we run LncDC)
+3. Activate the environment (before we run LncDC)
 ```
 conda activate lncdc
+```
+
+4. Install ViennaRNA for secondary structure features extraction (Optional)
+```
+conda install -c bioconda viennarna
 ```
 
 5. Deactivate the environment when the prediction or training is done.  
