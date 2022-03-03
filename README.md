@@ -26,7 +26,7 @@ conda activate lncdc
 conda install -c bioconda viennarna
 ```
 
-5. Deactivate the environment when the prediction or training is done.  
+5. You can deactivate the environment when the prediction or training is done.  
 ```
 conda deactivate
 ```
