@@ -15,6 +15,7 @@ import gzip
 import pathlib
 import pickle
 import pandas as pd
+import numpy as np
 import SIF_PF_extraction
 import argparse
 
@@ -88,7 +89,7 @@ def main():
     filepath = os.path.dirname(__file__)[:-3]
     default_data_path = os.path.join(filepath,'data/')
     parser = argparse.ArgumentParser(description='LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data', )
-    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3')
+    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.1')
     parser.add_argument('-i','--input', help = 'The inputfile with RNA transcript sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz)',
                         type = str, required = True, default = None)
     parser.add_argument('-o','--output', help = 'The output file that will contain the prediction results in csv format. Long noncoding RNAs are labeled as lncrna, and message RNAs are labeled as mrna. Default: lncdc.output.csv',
@@ -277,6 +278,7 @@ def main():
             XGB_model = pickle.load(file)
 
         y_pred = XGB_model.predict(x_test)
+        y_pred = np.vectorize({1:'mrna',0:'lncrna'}.get)(y_pred)
         y_prob = XGB_model.predict_proba(x_test)[:,0]
 
         # Append predictions and output
@@ -397,6 +399,7 @@ def main():
             XGB_model = pickle.load(file)
 
         y_pred = XGB_model.predict(x_test)
+        y_pred = np.vectorize({1:'mrna',0:'lncrna'}.get)(y_pred)
         y_prob = XGB_model.predict_proba(x_test)[:, 0]
 
         # Append predictions and output

@@ -110,7 +110,7 @@ def under_over_process(x, y, njobs):
 
 def main():
     parser = argparse.ArgumentParser(description='LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data')
-    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3')
+    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.1')
     parser.add_argument('-m','--mrna', help = 'The file with mRNA sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz).',
                         type = str, required = True, default = None)
     parser.add_argument('-c','--cds', help = 'The CDS sequences of the mRNAs in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz). The order and number of the CDS sequences should be the same as the mRNA sequences.',
@@ -259,6 +259,8 @@ def main():
             train_std.drop(['type'], axis=1),
             train_std['type'], thread)
         
+        y_resampled = y_resampled.map({'mrna':1,'lncrna':0})
+        
         print("Model fitting ...")
         # fit a model
         xgb_model = xgb.XGBClassifier(alpha = 10, colsample_bytree = 0.8, gamma = 0.01, learning_rate = 0.1,
@@ -280,7 +282,7 @@ def main():
         dataset = dataset.reset_index(drop=True)
 
         print("Removing Non-valid transcripts (sequence that have non-ATGCatgc" + " letters & sequence length less than 200 nt) ...")
-        print("Number of valid transcripts: " + str(dataset.index.size))
+        print("Number of valid transcripts for training: " + str(dataset.index.size))
         
         print("Extracting SIF and PF features ...")
 
@@ -337,6 +339,8 @@ def main():
         x_resampled, y_resampled = under_over_process(
             train_std.drop(['type'], axis=1),
             train_std['type'], thread)
+
+        y_resampled = y_resampled.map({'mrna':1,'lncrna':0})
 
         print("Model fitting ...")
         # fit a model
