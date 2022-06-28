@@ -115,7 +115,7 @@ def main():
                         type = str, required = True, default = None)
     parser.add_argument('-c','--cds', help = 'The CDS sequences of the mRNAs in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz). The order and number of the CDS sequences should be the same as the mRNA sequences.',
                         type = str, required = True, default = None)
-    parser.add_argument('-l','--lncrna', help = 'The file with lncRNA sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz).')
+    parser.add_argument('-l','--lncrna', help = 'The file with lncRNA sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz).', required = True, default = None)
     parser.add_argument('-o','--output', help = 'The prefix of the output files, including a hexamer table, a prediction model, an imputer and a scaler. If the -r parameter turned on, the output files will also include secondary structure kmer tables.',
                         type = str, default = 'self_train')
     parser.add_argument('-r','--secondary', help = '(Optional) Turn on to train a model with secondary structure features. This will generate secondary structure kmer tables. Default: turned off.',
