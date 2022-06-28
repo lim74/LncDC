@@ -129,8 +129,8 @@ def main():
         try:
             import RNA
         except:
-            sys.stderr.write("ViennaRNA is not installed! \n")
-            sys.stderr.write("ViennaRNA is required for secondary structure feature extraction. \nYou can install it by conda: conda install -c bioconda viennarna \n")
+            sys.stderr.write("ViennaRNA is not properly installed! \n")
+            sys.stderr.write("ViennaRNA is required for secondary structure feature extraction. \nYou can install it by: \n1) CONDA: conda install -c bioconda viennarna \n2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/ \n \nTo confirm that ViennaRNA is properly installed, you can test by: \npython \n>>> import RNA \n")
             sys.exit(1)
     
     print("Process Start.")
