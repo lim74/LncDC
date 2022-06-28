@@ -4,14 +4,11 @@ LncDC: a machine learning based tool for long non-coding RNA detection from RNA-
 ## Pre-requisite
 python 3 >= 3.9; pandas >= 1.4.2; numpy >= 1.23; scikit-learn >= 1.1.1; xgboost >= 1.6.1; imbalanced-learn >= 0.9.1; biopython >= 1.79; tqdm >= 4.64.0
 
-ViennaRNA (Optional, only required when using secondary structure features for prediction. Can be installed by:
-
-    1) CONDA: conda install -c bioconda viennarna 
+ViennaRNA (Optional, only required when using secondary structure features for prediction.) 
+Can be installed by:
+1) CONDA: conda install -c bioconda viennarna 
+2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/
     
-    2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/
-    
-)
-
 Note: biopython is currently not supported by python 3.10, please use python 3.9!
 
 ## Conda environment
