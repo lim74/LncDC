@@ -89,7 +89,7 @@ def main():
     filepath = os.path.dirname(__file__)[:-3]
     default_data_path = os.path.join(filepath,'data/')
     parser = argparse.ArgumentParser(description='LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data', )
-    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.1')
+    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.2')
     parser.add_argument('-i','--input', help = 'The inputfile with RNA transcript sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz)',
                         type = str, required = True, default = None)
     parser.add_argument('-o','--output', help = 'The output file that will contain the prediction results in csv format. Long noncoding RNAs are labeled as lncrna, and message RNAs are labeled as mrna. Default: lncdc.output.csv',
@@ -130,7 +130,7 @@ def main():
             import RNA
         except:
             sys.stderr.write("ViennaRNA is not properly installed! \n")
-            sys.stderr.write("ViennaRNA is required for secondary structure feature extraction. \nYou can install it by: \n1) CONDA: conda install -c bioconda viennarna \n2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/ \n \nTo confirm that ViennaRNA is properly installed, you can test by: \npython \n>>> import RNA \n")
+            sys.stderr.write("ViennaRNA is required for secondary structure feature extraction. \nYou can install it by: \n1) CONDA: conda install -c bioconda viennarna \n2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/ \n \nTo confirm that ViennaRNA is properly installed, you can test it by: \n$ python \n>>> import RNA \n \nViennaRNA is successfully installed if there are no error messages poped up. \n")
             sys.exit(1)
     
     print("Process Start.")

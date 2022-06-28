@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'lncDC',
-    version = '1.3.1',
+    version = '1.3.2',
     author = 'Minghua Li',
     author_email = 'lim74@miamioh.edu',
     description = 'A tool for predicting the probability of a transcript being a long noncoding rna',
