@@ -1,6 +1,6 @@
 pandas>=1.4.2
 numpy>=1.23
-scikit-learn>=1.1.1
+scikit-learn==1.1.1
 xgboost>=1.6.1
 imbalanced-learn>=0.9.1
 biopython>=1.79

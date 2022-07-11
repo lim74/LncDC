@@ -110,7 +110,7 @@ def under_over_process(x, y, njobs):
 
 def main():
     parser = argparse.ArgumentParser(description='LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data')
-    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.2')
+    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.3')
     parser.add_argument('-m','--mrna', help = 'The file with mRNA sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz).',
                         type = str, required = True, default = None)
     parser.add_argument('-c','--cds', help = 'The CDS sequences of the mRNAs in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz). The order and number of the CDS sequences should be the same as the mRNA sequences.',

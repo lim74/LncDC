@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'lncDC',
-    version = '1.3.2',
+    version = '1.3.3',
     author = 'Minghua Li',
     author_email = 'lim74@miamioh.edu',
     description = 'A tool for predicting the probability of a transcript being a long noncoding rna',
@@ -12,7 +12,7 @@ setup(
     install_requires = [
         'pandas>=1.4.2',
         'numpy>=1.23',
-        'scikit-learn>=1.1.1',
+        'scikit-learn==1.1.1',
         'xgboost>=1.6.1',
         'imbalanced-learn>=0.9.1',
         'biopython>=1.79',
