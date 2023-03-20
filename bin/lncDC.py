@@ -89,7 +89,7 @@ def main():
     filepath = os.path.dirname(__file__)[:-3]
     default_data_path = os.path.join(filepath,'data/')
     parser = argparse.ArgumentParser(description='LncDC: a machine learning based tool for long non-coding RNA detection from RNA-Seq data', )
-    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.4')
+    parser.add_argument('-v','--version', action = 'version', version = '%(prog)s version:1.3.5')
     parser.add_argument('-i','--input', help = 'The inputfile with RNA transcript sequences in fasta format. The fasta file could be regular text file or gzip compressed file (*.gz)',
                         type = str, required = True, default = None)
     parser.add_argument('-o','--output', help = 'The output file that will contain the prediction results in csv format. Long noncoding RNAs are labeled as lncrna, and message RNAs are labeled as mrna. Default: lncdc.output.csv',
