@@ -8,8 +8,6 @@ ViennaRNA (Optional, only required when using secondary structure features for p
 Can be installed by:
 1) CONDA: conda install -c bioconda viennarna 
 2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/
-    
-Note: biopython is currently not supported by python 3.10, please use python 3.9!
 
 ## Conda environment
 1. Download and install Anaconda.
