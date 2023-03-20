@@ -8,6 +8,8 @@ ViennaRNA (Optional, only required when using secondary structure features for p
 Can be installed by:
 1) CONDA: conda install -c bioconda viennarna 
 2) Or install from the official ViennaRNA website: https://www.tbi.univie.ac.at/RNA/
+    
+Note: biopython is currently not supported by python 3.10, please use python 3.9!
 
 ## Conda environment
 1. Download and install Anaconda.
@@ -129,6 +131,9 @@ CGAATTAGTGCTGCCCGAGGATAGAATCTACCTGGCTGGCTCCAGCATAAAGGGCAGGTGATCT
 AAGAATTGCAACAAC
 ```
 
+NOTE:
+Suppose you use LncDC to predict lncRNAs from non-model organisms and don't have enough well-annotated lncRNAs for model training. In that case, you could train a model with the data from evolutionary closed model organisms, such as Zebrafish, Yeast, Soybean, *Drosophila melanogaster*, *Caenorhabditis elegans*, *Arabidopsis thaliana*, *Oryza sativa*, and etc.
+
 ### Examples for training models
 1. Train a model (No secondary structure features) using mouse data
 ```
@@ -149,9 +154,6 @@ Minghua Li
 
 ## Contact
 lim74@miamioh.edu
-
-## Cite this article
-Li, M., Liang, C. LncDC: a machine learning-based tool for long non-coding RNA detection from RNA-Seq data. Sci Rep 12, 19083 (2022). https://doi.org/10.1038/s41598-022-22082-7
 
 ## License
 This project is licensed under the MIT License. 

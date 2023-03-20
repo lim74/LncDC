@@ -150,6 +150,7 @@ def main():
     file_exist(cds, parser)
     file_exist(lncrna, parser)
     
+    print()
     print("Checking if the training files are in fasta format ...")
     format_check(mrna)
     format_check(cds)
@@ -166,7 +167,8 @@ def main():
     mrna_data = load_fasta(mrna)
     # load cds data
     cds_data = load_fasta(cds)
-
+    
+    print()
     print("Initializing dataframe ...")
     # initialize a mrna dataframe
     mrna_dataset = pd.DataFrame(index=range(len(mrna_data)), columns=['Sequence', 'type', 'CDS_seq'])
@@ -201,6 +203,7 @@ def main():
     dataset.reset_index(drop = True, inplace = True)
 
     print("Calculating transcript lengths ...")
+    print()
     # Calculate the length of the transcripts
     for i in range(dataset.index.size):
         dataset.loc[i,'Transcript_length'] = len(dataset.loc[i, 'Sequence'])
@@ -214,6 +217,11 @@ def main():
         print("Removing Non-valid transcripts (sequence that have non-ATGCatgc letters & sequence length less than 200 nt) ...")
         print("Number of valid transcripts for training: " + str(dataset.index.size))
         
+        if dataset.index.size == 0:
+            sys.stderr.write("No valid transcripts detected! \n")
+            sys.exit(1)
+        
+        print()
         print("Extracting SIF and PF features ...")
         
         # extract features
@@ -282,8 +290,16 @@ def main():
         dataset = dataset.reset_index(drop=True)
 
         print("Removing Non-valid transcripts (sequence that have non-ATGCatgc" + " letters & sequence length less than 200 nt) ...")
+        print("Filtering out transcripts with sequence length greater than 20,000" + "nt due to the limited addressable range of the RNAfold program ...")
+        
+        print()
         print("Number of valid transcripts for training: " + str(dataset.index.size))
         
+        if dataset.index.size == 0:
+            sys.stderr.write("No valid transcripts detected! \n")
+            sys.exit(1)
+        
+        print()
         print("Extracting SIF and PF features ...")
 
         # extract features

@@ -206,6 +206,7 @@ def main():
     
     test_data = load_fasta(inputfile)
     
+    print()
     print("Initializing dataframe ...")
     # initialize a dataframe
     dataset = pd.DataFrame(index = range(len(test_data)), columns = ['Sequence','Description'])
@@ -224,6 +225,7 @@ def main():
     dataset.reset_index(drop = True, inplace = True)
     
     print("Calculating transcript lengths ...")
+    print()
     
     # Calculate the length of the transcripts
     for i in range(dataset.index.size):
@@ -250,6 +252,11 @@ def main():
         print("Removing Non-valid transcripts (sequence that have non-ATGCatgc letters & sequence length less than 200 nt) ...")
         print("Number of valid transcripts: " + str(dataset.index.size))
         
+        if dataset.index.size == 0:
+            sys.stderr.write("No valid transcripts detected! \n")
+            sys.exit(1)
+        
+        print()
         print("Extracting SIF and PF features ...")
         
         # extract features
@@ -294,13 +301,22 @@ def main():
     else:
         # Use SIF + PF + SSF
         import SSF_extraction
-        # Filter out sequence length less than 200nt
-        dataset = dataset[dataset['Transcript_length'] >= 200]
+        # Filter out sequence length less than 200nt or more than 20000nt
+        dataset = dataset[(dataset['Transcript_length'] >= 200) & (dataset['Transcript_length'] <= 20000)]
         dataset = dataset.reset_index(drop=True)
         
         print("Removing Non-valid transcripts (sequence that have non-ATGCatgc" + " letters & sequence length less than 200 nt) ...")
+        print("Filtering out transcripts with sequence length greater than 20,000" + "nt due to the limited addressable range of the RNAfold program ...")
+        print("We recommand you use LncDC without the '-r' option to predict lncRNAs over 20,000 nts.")
+        
+        print()
         print("Number of valid transcripts: " + str(dataset.index.size))
         
+        if dataset.index.size == 0:
+            sys.stderr.write("No valid transcripts detected! \n")
+            sys.exit(1)
+        
+        print()
         print("Extracting SIF and PF features ...")
         
         # extract SIF + PF features
