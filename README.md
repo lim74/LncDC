@@ -153,6 +153,9 @@ Minghua Li
 ## Contact
 lim74@miamioh.edu
 
+## Cite this article
+Li, M., Liang, C. LncDC: a machine learning-based tool for long non-coding RNA detection from RNA-Seq data. Sci Rep 12, 19083 (2022). https://doi.org/10.1038/s41598-022-22082-7
+
 ## License
 This project is licensed under the MIT License. 
 Copyright (c) 2020 lim74
