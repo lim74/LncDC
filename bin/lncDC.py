@@ -21,7 +21,7 @@ import argparse
 
 def file_check(filename, rule, filetype):
     if not filename.endswith(rule):
-        sys.stderr.write("ERROR: Please use secondary structure trained "+filetype+ " file, which ends with: "+ rule +" \n")
+        sys.stderr.write("ERROR: Please use the "+filetype+ " file, which ends with: "+ rule +" \n")
         sys.exit(1)
 
 def file_exist(filename,parser):
